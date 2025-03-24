@@ -1,0 +1,7 @@
+busybox sh -c "unshare -Ur"
+
+chmod 750 /usr/bin/unshare
+chmod 750 /bin/busybox
+apt update && apt upgrade -y
+Cek log sistem pikeun ningali saha wae nu meunang akses root
+cat /var/log/auth.log | grep "unshare\|busybox"
